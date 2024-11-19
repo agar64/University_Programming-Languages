@@ -1,0 +1,174 @@
+class Tree:
+    def __init__(self, key, val, left, right):
+        self.key = key
+        self.val = val
+        self.left = left
+        self.right = right
+
+'''
+tree1 = Tree("a", 10, None, None)
+tree3 = Tree("c", 15, None, None)
+tree2 = Tree("b", 20, tree1, tree3)
+'''
+#leaf = Tree("leaf", 0, None, None)
+
+leaf = None
+
+exTreeMain = Tree("a", 111, exTreeB, exTreeC)
+    exTreeB = Tree("b", 55, exTreeX, exTreeY)
+        exTreeX = Tree("x", 100, exTreeZ, exTreeW)
+            exTreeZ = Tree("z", 56, leaf, leaf)
+            exTreeW = Tree("w", 23, leaf, leaf)
+        exTreeY = Tree("y", 105, leaf, exTreeR)
+            exTreeR = Tree("r", 77, leaf, leaf)
+    exTreeC = Tree("c", 123, exTreeD, exTreeE)
+        exTreeD = Tree("d", 119, exTreeG, exTreeH)
+            exTreeG = Tree("g", 44, leaf, leaf)
+            exTreeH = Tree("h", 50, exTreeI, exTreeJ)
+                exTreeI = Tree("i", 5, leaf, leaf)
+                exTreeJ = Tree("j", 6, leaf, leaf)
+        exTreeE = Tree("e", 133, leaf, leaf)
+        
+#single line
+
+exTreeMain = Tree("a", 111, exTreeB = Tree("b", 55, exTreeX = Tree("x", 100, exTreeZ = Tree("z", 56, leaf, leaf), exTreeW = Tree("w", 23, leaf, leaf)), exTreeY = Tree("y", 105, leaf, exTreeR = Tree("r", 77, leaf, leaf))), exTreeC = Tree("c", 123, exTreeD = Tree("d", 119, exTreeG = Tree("g", 44, leaf, leaf), exTreeH = Tree("h", 50, exTreeI = Tree("i", 5, leaf, leaf), exTreeJ = Tree("j", 6, leaf, leaf))), exTreeE = Tree("e", 133, leaf, leaf)))
+
+#inputable
+
+exTreeE = Tree("e", 133, leaf, leaf)
+exTreeJ = Tree("j", 6, leaf, leaf)
+exTreeI = Tree("i", 5, leaf, leaf)
+exTreeH = Tree("h", 50, exTreeI, exTreeJ)
+exTreeG = Tree("g", 44, leaf, leaf)
+exTreeD = Tree("d", 119, exTreeG, exTreeH)
+exTreeC = Tree("c", 123, exTreeD, exTreeE)
+exTreeR = Tree("r", 77, leaf, leaf)
+exTreeY = Tree("y", 105, leaf, exTreeR)
+exTreeW = Tree("w", 23, leaf, leaf)
+exTreeZ = Tree("z", 56, leaf, leaf)
+exTreeX = Tree("x", 100, exTreeZ, exTreeW)
+exTreeB = Tree("b", 55, exTreeX, exTreeY)
+exTreeMain = Tree("a", 111, exTreeB, exTreeC)
+
+'''
+def depthFirst(tree):
+    match tree:
+        case tree.left | tree.right:
+            depthFirst(tree.left)
+            depthFirst(tree.right)
+        case _:
+            pass
+
+
+def depthFirst(tree):
+    match tree:
+        case tree(left=Tree()) | tree(right=Tree()):
+            depthFirst(tree.left)
+            depthFirst(tree.right)
+        case _:
+            pass
+            
+'''
+
+def depthFirst(tree):
+    match tree:
+        case Tree():
+            depthFirst(tree.left)
+            depthFirst(tree.right)
+        case _:
+            pass
+
+#Node-Calculating
+
+#test
+scale = 30
+def depthFirstMain(tree, level, leftLim):
+    match tree:
+        case Tree(left=Tree()) | Tree(right=Tree()):
+            print("Yoinks!")
+        case _:
+            print("Nyoron~~")
+
+#test2
+def depthFirstMain(tree, level, leftLim):
+    match tree:
+        case Tree(left=None) | Tree(right=None):
+            print("Yoinks!")
+        case _:
+            print("Nyoron~~")
+
+scale = 30
+def depthFirstMain(tree, level, leftLim):
+    match tree:
+        case Tree(left=None, right=None):
+            #print("Both are leaves")
+            x = rootX = rightLim = leftLim
+            y = scale*level
+            X_Y_RootX_RightLim = (x, y, rootX, rightLim)
+            setattr(tree, "x", x)
+            setattr(tree, "y", y)
+            print("Key:",tree.key,"X:",x,"Y:",y,"Root X:",rootX,"Right Lim:",rightLim)
+            return X_Y_RootX_RightLim
+        case Tree(left=Tree(), right=None):
+            #print("Left is a subtree, Right is a leaf")
+            X_Y_RootX_RightLim = depthFirstMain(tree.left, level+1, leftLim)
+            x = X_Y_RootX_RightLim[2]
+            y = scale*level
+            setattr(tree, "x", x)
+            setattr(tree, "y", y)
+            print("Key:",tree.key,"X:",x,"Y:",y,"Root X:",X_Y_RootX_RightLim[2],"Right Lim:",X_Y_RootX_RightLim[3])
+            return X_Y_RootX_RightLim
+        case Tree(left=None, right=Tree()):
+            #print("Left is a leaf, Right is a subtree")
+            X_Y_RootX_RightLim = depthFirstMain(tree.right, level+1, leftLim)
+            x = X_Y_RootX_RightLim[2]
+            y = scale*level
+            setattr(tree, "x", x)
+            setattr(tree, "y", y)
+            print("Key:",tree.key,"X:",x,"Y:",y,"Root X:",X_Y_RootX_RightLim[2],"Right Lim:",X_Y_RootX_RightLim[3])
+            return X_Y_RootX_RightLim
+        case Tree(left=Tree(), right=Tree()):
+            #print("Both are subtrees")
+            y = scale*level
+            X_Y_LRootX_LRightLim = depthFirstMain(tree.left, level+1, leftLim)
+            RLeftLim = X_Y_LRootX_LRightLim[3] + scale
+            X_Y_RRootX_RightLim = depthFirstMain(tree.right, level+1, RLeftLim)
+            x = rootX = (X_Y_LRootX_LRightLim[2] + X_Y_RRootX_RightLim[2])//2
+            rightLim = X_Y_RRootX_RightLim[3]
+            X_Y_RootX_RightLim = (x, y, rootX, rightLim)
+            setattr(tree, "x", x)
+            setattr(tree, "y", y)
+            print("Key:",tree.key,"X:",x,"Y:",y,"Root X:",rootX,"Right Lim:",rightLim)
+            return X_Y_RootX_RightLim
+        case _:
+            print("Nyoron~~")
+
+class TreeXY:
+    def __init__(self, key, val, left, right, x, y):
+        self.key = key
+        self.val = val
+        self.left = left
+        self.right = right
+        self.x = x
+        self.y = y
+
+def addXY(tree, x, y):
+    newTree = TreeXY(tree.key, tree.val, tree.left, tree.right, x, y)
+    return newTree
+
+if True:
+    leaf = None
+    exTreeE = Tree("e", 133, leaf, leaf)
+    exTreeJ = Tree("j", 6, leaf, leaf)
+    exTreeI = Tree("i", 5, leaf, leaf)
+    exTreeH = Tree("h", 50, exTreeI, exTreeJ)
+    exTreeG = Tree("g", 44, leaf, leaf)
+    exTreeD = Tree("d", 119, exTreeG, exTreeH)
+    exTreeC = Tree("c", 123, exTreeD, exTreeE)
+    exTreeR = Tree("r", 77, leaf, leaf)
+    exTreeY = Tree("y", 105, leaf, exTreeR)
+    exTreeW = Tree("w", 23, leaf, leaf)
+    exTreeZ = Tree("z", 56, leaf, leaf)
+    exTreeX = Tree("x", 100, exTreeZ, exTreeW)
+    exTreeB = Tree("b", 55, exTreeX, exTreeY)
+    exTreeMain = Tree("a", 111, exTreeB, exTreeC)

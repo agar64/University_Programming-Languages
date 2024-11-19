@@ -1,0 +1,208 @@
+declare NewActive Victim Josephus TimeJ1 TimeJ1NoSC TimeJ2 TimeJ3
+
+{Browse 'Results:'}
+
+fun {NewActive Class Init}
+   Obj={New Class Init}
+   P
+in
+   thread S in
+      {NewPort S P}
+      for M in S do {Obj M} end
+   end
+   proc {$ M} {Send P M} end
+end
+
+class Victim
+   attr ident step last succ pred alive:true
+   meth init(I K L) ident:=I step:=K last:=L end
+   meth setSucc(S) succ:=S end
+   meth setPred(P) pred:=P end
+   meth kill(X S)
+      if @alive then
+	 if S==1 then @last=@ident
+	 elseif X mod @step==0 then
+	    alive:=false
+	    {@pred newsucc(@succ)}
+	    {@succ newpred(@pred)}
+	    {@succ kill(X+1 S-1)}
+	 else
+	    {@succ kill(X+1 S)}
+	 end
+      else {@succ kill(X S)} end
+   end
+   meth newsucc(S)
+      if @alive then succ:=S
+      else {@pred newsucc(S)} end
+   end
+   meth newpred(P)
+      if @alive then pred:=P
+      else {@succ newpred(P)} end
+   end
+end
+
+fun {Josephus N K}
+   A={NewArray 1 N null}
+   Last
+in
+   for I in 1..N do
+      A.I:={NewActive Victim init(I K Last)}
+   end
+   for I in 2..N do {A.I setPred(A.(I-1))} end
+   {A.1 setPred(A.N)}
+   for I in 1..(N-1) do {A.I setSucc(A.(I+1))} end
+   {A.N setSucc(A.1)} {A.1 kill(1 N)}
+   Last
+end
+
+% local Result in
+%    Result = {Josephus 41 3}
+%    {Browse Result}
+% end
+
+%%%%Josephus No SC%%%%
+
+declare JosephusNoSC VictimNoSC
+
+class VictimNoSC
+   attr ident step last succ pred alive:true
+   meth init(I K L) ident:=I step:=K last:=L end
+   meth setSucc(S) succ:=S end
+   meth setPred(P) pred:=P end
+   meth kill(X S)
+      if @alive then
+	 if S==1 then @last=@ident
+	 elseif X mod @step==0 then
+	    alive:=false
+	    {@succ kill(X+1 S-1)}
+	 else
+	    {@succ kill(X+1 S)}
+	 end
+      else {@succ kill(X S)} end
+   end
+   meth newsucc(S)
+      if @alive then succ:=S
+      else {@pred newsucc(S)} end
+   end
+   meth newpred(P)
+      if @alive then pred:=P
+      else {@succ newpred(P)} end
+   end
+end
+
+fun {JosephusNoSC N K}
+   A={NewArray 1 N null}
+   Last
+in
+   for I in 1..N do
+      A.I:={NewActive VictimNoSC init(I K Last)}
+   end
+   for I in 2..N do {A.I setPred(A.(I-1))} end
+   {A.1 setPred(A.N)}
+   for I in 1..(N-1) do {A.I setSucc(A.(I+1))} end
+   {A.N setSucc(A.1)} {A.1 kill(1 N)}
+   Last
+end
+
+
+
+%%%%Josephus 2%%%%
+
+declare Pipe Josephus2
+
+fun {Pipe Xs L H F}
+   if L=<H then {Pipe {F Xs L} L+1 H F} else Xs end
+end
+
+fun {Josephus2 N K}
+   fun {Victim Xs I}
+      case Xs of kill(X S)|Xr then
+	 if S==1 then Last=I nil
+	 elseif X mod K==0 then
+	    kill(X+1 S-1)|Xr
+	 else
+	    kill(X+1 S)|{Victim Xr I}
+	 end
+      [] nil then nil end
+   end
+   Last Zs
+in
+   Zs={Pipe kill(1 N)|Zs 1 N
+       fun {$ Is I} thread {Victim Is I} end end}
+   Last
+end
+
+% local Result2 in
+%    Result2 = {Josephus2 41 3}
+%    {Browse Result2}
+% end
+
+%%%%Josephus 3%%%%
+
+declare Josephus3 
+fun {Josephus3 N K}
+   local A Visited Alive LastVisited X in
+      A = {NewArray 1 N true}
+      Visited = {NewCell 1}
+      Alive = {NewCell N}
+      LastVisited = {NewCell 0}
+      X = {NewCell true}
+
+      for while:@X==true do
+	 for I in 1..N do	 
+	    if A.I == true then
+	       if @Visited == K then
+		  A.I := false
+		  Visited := 1
+		  Alive := @Alive - 1
+	       else
+		  Visited := @Visited + 1
+		  LastVisited := I
+	       end
+	    end
+	 end
+	 if @Alive =< 1 then
+	    X := false
+	 end
+      end
+      LastVisited
+   end
+end
+
+local Result1 Result2 Result3 Result1NoSC N K T1 T1N T2 T3 TimeJ1End TimeJ1NoSCEnd TimeJ2End TimeJ3End in
+   N = 100000
+   K = 100
+   thread TimeJ1 = {Time.time}
+     {Wait Result1 = {Josephus N K}}
+   TimeJ1End = {Time.time} end
+   thread TimeJ1NoSC = {Time.time}
+     {Wait Result1NoSC = {JosephusNoSC N K}}
+   TimeJ1NoSCEnd = {Time.time} end
+   thread TimeJ2 = {Time.time}
+     {Wait Result2 = {Josephus2 N K}}
+   TimeJ2End = {Time.time} end
+   thread TimeJ3 = {Time.time}
+     {Wait Result3 = @{Josephus3 N K}}
+      TimeJ3End = {Time.time} end
+
+   T1 = TimeJ1End - TimeJ1
+   T1N = TimeJ1NoSCEnd - TimeJ1NoSC
+   T2 = TimeJ2End - TimeJ2
+   T3 = TimeJ3End - TimeJ3
+   {Browse 'Josephus 1:'}
+   {Browse Result1}
+   {Browse 'Time:'}
+   {Browse T1}
+   {Browse 'Josephus 1 No SC:'}
+   {Browse Result1NoSC}
+   {Browse 'Time:'}
+   {Browse T1N}
+   {Browse 'Josephus 2:'}
+   {Browse Result2}
+   {Browse 'Time:'}
+   {Browse T2}
+   {Browse 'Josephus 3:'}
+   {Browse Result3}
+   {Browse 'Time:'}
+   {Browse T3}
+end

@@ -1,0 +1,356 @@
+declare Josephus3
+
+fun {Josephus3 N K}
+   A={NewArray 1 N true}
+   Last
+in
+   for I in 1..N do
+      A.I:={NewActive Victim init(I K Last)}
+   end
+   for I in 2..N do {A.I setPred(A.(I-1))} end
+   {A.1 setPred(A.N)}
+   for I in 1..(N-1) do {A.I setSucc(A.(I+1))} end
+   {A.N setSucc(A.1)} {A.1 kill(1 N)}
+   Last
+end
+
+//
+
+declare
+   fun {Josephus3 N K}
+      local
+         A = {List.tabulate N fun {_ _} true end}
+         Visited = {NewCell 1}
+         Alive = {NewCell N}
+         LastVisited = {NewCell nil}
+
+         proc {Visit I}
+            A.I := false
+            {Visited := 1}
+            {Alive := @Alive - 1}
+         end
+
+         proc {Loop I}
+            if I <= N then
+               if A.I == true then
+                  if {@Visited} == K then
+                     {Visit I}
+                  else
+                     {Visited := @Visited + 1}
+                     {LastVisited := I}
+                  end
+               end
+               {Loop I+1}
+            end
+         end
+      in
+         {Loop 1}
+         {Browse "Result: " @LastVisited}
+      end
+   end
+in
+   {Josephus3 10 3}
+   
+//
+
+declare Josephus3
+fun {Josephus3 N K}
+	A = {NewArray 1 N true}
+	Visited := 1
+	Alive := N
+	LastVisited := 0
+	
+	while @Alive > 1 do
+		for I in 1..N do
+			if A.I == true then
+				if @Visited == K then
+					A.I := false
+					Visited := 1
+					Alive := @Alive - 1
+				else
+					Visited := @Visited + 1
+					LastVisited := @I + 1
+				end
+			end
+		end
+	end
+{Browse  "Result: " @LastVisited}
+end
+
+{Josephus3 41 3}
+
+//
+
+declare Josephus3
+fun {Josephus3 N K}
+   A = {NewArray 1 N true}
+   Visited := 1
+   Alive := N
+   LastVisited := 0
+   
+   while @Alive > 1 do
+   for I in 1..N do
+      if A.I == true then
+	 if @Visited == K then
+	    A.I := false
+	    Visited := 1
+	    Alive := @Alive - 1
+	 else
+	    Visited := @Visited + 1
+	    LastVisited := @I + 1
+	 end
+      end
+   end
+   end
+end
+{Browse  "Result: " @LastVisited}
+end
+
+{Josephus3 41 3}
+
+//
+
+declare N X
+N = {NewCell 1}
+X = {NewCell true}
+for J in (1;@X;100) do
+   {Browse @N}
+   N := @N + 1
+   if @N >20 then
+      X := false
+   end
+end
+
+//
+
+declare Josephus3
+fun {Josephus3 N K}
+   A = {NewArray 1 N true}
+   Visited := 1
+   Alive := N
+   LastVisited := 0
+   While = {NewCell true}
+   
+   for X in (1;@While;N*N) do
+   for I in 1..N do
+      if A.I == true then
+	 if @Visited == K then
+	    A.I := false
+	    Visited := 1
+	    Alive := @Alive - 1
+	 else
+	    Visited := @Visited + 1
+	    LastVisited := @I + 1
+	 end
+	 if @Alive <= 1 then While := false end
+      end
+   end
+   end
+end
+{Browse  "Result: " @LastVisited}
+end
+
+{Josephus3 41 3}
+
+//
+
+declare Josephus3
+fun {Josephus3 N K}
+   A = {NewArray 1 N true}
+   Visited := 1
+   Alive := N
+   LastVisited := 0
+   WhileBool = {NewCell true}
+   
+   for X in (1;@WhileBool;N*N) do
+      for I in 1..N do
+	 if A.I == true then
+	    if @Visited == K then
+	       A.I := false
+	       Visited := 1
+	       Alive := @Alive - 1
+	    else
+	       Visited := @Visited + 1
+	       LastVisited := @I + 1
+	    end
+	    if @Alive =< 1 then
+	       WhileBool := false
+	    end
+	 end
+      end
+   end
+end
+{Browse  "Result: " @LastVisited}
+end
+
+{Josephus3 41 3}
+
+//
+
+declare Josephus3 A Visited Alive LastVisited WhileBool O
+proc {Josephus3 N K}
+   A = {NewArray 1 N true}
+   Visited := 1
+   Alive := N
+   LastVisited := 0
+   WhileBool = {NewCell true}
+   
+   for X in (1;@WhileBool;N*N) do
+      for I in 1..N do
+	 if A.I == true then
+	    if @Visited == K then
+	       A.I := false
+	       Visited := 1
+	       Alive := @Alive - 1
+	    else
+	       Visited := @Visited + 1
+	       LastVisited := @I + 1
+	    end
+	    if @Alive =< 1 then
+	       WhileBool := false
+	    end
+	 end
+      end
+   end
+
+   {Browse  "Result: " @LastVisited}
+end
+
+{Josephus3 41 3}
+
+//
+
+declare Josephus3 A Visited Alive LastVisited WhileBool
+proc {Josephus3 N K}
+   A = {NewArray 1 N true}
+   Visited = {NewCell 1}
+   Alive = {NewCell N}
+   LastVisited = {NewCell 0}
+   WhileBool = {NewCell true}
+   
+   for X in (1;@WhileBool;N) do
+      for I in 1..N do
+	 if A.I == true then
+	    if @Visited == K then
+	       A.I := false
+	       Visited := 1
+	       Alive := @Alive - 1
+	    else
+	       Visited := @Visited + 1
+	       LastVisited := @I + 1
+	    end
+	    if @Alive =< 1 then
+	       WhileBool := false
+	    end
+	 end
+      end
+   end
+
+   {Browse  "Result: " @LastVisited}
+end
+
+{Josephus3 41 3}
+
+//
+
+declare Josephus3 A Visited Alive WhileBool LastVisited
+fun {Josephus3 N K}
+   A = {NewArray 1 N true}
+   Visited := 1
+   Alive := N
+   LastVisited := 0
+   WhileBool = {NewCell true}
+   
+   for X in (1;@WhileBool;N*N) do
+      for I in 1..N do
+	 if A.I == true then
+	    if @Visited == K then
+	       A.I := false
+	       Visited := 1
+	       Alive := @Alive - 1
+	    else
+	       Visited := @Visited + 1
+	       LastVisited := @I + 1
+	    end
+	    if @Alive =< 1 then
+	       WhileBool := false
+	    end
+	 end
+      end
+   end
+
+   {Browse  "Result: " @LastVisited}
+end
+
+{Josephus3 41 3}
+
+//
+
+declare Josephus3 A Visited Alive WhileBool LastVisited
+fun {Josephus3 N K}
+   A = {NewArray 1 N true}
+   Visited := 1
+   Alive := N
+   LastVisited := 0
+   WhileBool = {NewCell true}
+   
+   for X in(1;@WhileBool;N*N) do
+      for I in 1..N do
+	 if A.I == true then
+	    if @Visited == K then
+	       A.I := false
+	       Visited := 1
+	       Alive := @Alive - 1
+	    else
+	       Visited := @Visited + 1
+	       LastVisited := @I + 1
+	    end
+	    if @Alive =< 1 then
+	       WhileBool := false
+	    end
+	 end
+      end
+   end
+end
+
+local Result3 in
+   Result3 = {Josephus3 41 3}
+   {Browse Result3}
+end
+
+//
+
+declare Josephus3 
+fun {Josephus3 N K}
+   local A Visited Alive WhileBool LastVisited Y in
+      A = {NewArray 1 N true}
+      Visited = {NewCell 1}
+      Alive = {NewCell N}
+      LastVisited = {NewCell 0}
+      WhileBool = {NewCell true}
+
+      for X in 1..N*N do
+	 for I in 1..N do	 
+	    if A.I == true then
+	       if @Visited == K then
+	 	  A.I := false
+	 	  Visited := 1
+	       	  Alive := @Alive - 1
+	       else
+	       	  Visited := @Visited + 1
+	       	  LastVisited := I + 1
+	       end
+	    end
+	 end
+	 if @Alive =< 1 then
+	    X = N*N
+	 end
+      end
+      LastVisited
+   end
+end
+
+local Result3 in
+   Result3 = {Josephus3 41 3}
+   {Browse Result3}
+end

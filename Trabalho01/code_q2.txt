@@ -1,0 +1,69 @@
+import enum
+
+'''
+class Atom(enum.Enum):
+    PROG = "prog"
+    SEMICOLON = ";"
+    ASSIGN = "assign"
+    IF = "if"
+    WHILE = "while"
+    READ = "read"
+    WRITE = "write"
+    EQUALS = "=="
+    NOTEQUALS = "!="
+    LARGER = ">"
+    SMALLER = "<"
+    EQORLESS = "=<"
+    EQORMORE = ">="
+    ADD = "+"
+    SUB = "-"
+    MUL = "*"
+    SLASH = "/"
+'''
+if True:
+    PROG = enum.auto("prog")
+    SEMICOLON = enum.auto(";")
+    ASSIGN = enum.auto("assign")
+    IF = enum.auto("if")
+    WHILE = enum.auto("while")
+    READ = enum.auto("read")
+    WRITE = enum.auto("write")
+    EQUALS = enum.auto("==")
+    NOTEQUALS = enum.auto("!=")
+    LARGER = enum.auto(">")
+    SMALLER = enum.auto("<")
+    EQORLESS = enum.auto("=<")
+    EQORMORE = enum.auto(">=")
+    ADD = enum.auto("+")
+    SUB = enum.auto("-")
+    MUL = enum.auto("*")
+    SLASH = enum.auto("/")
+
+def isAtom(atom):
+    match atom:
+        case enum.auto():
+            return True
+        case _:
+            return False
+
+def COP(x):
+    if isAtom(x):
+        return x.value == "<" or x.value == ">" or x.value == "=<" or x.value == ">=" or x.value == "==" or x.value == "!="
+    else: return False
+
+def EOP(x):
+    if isAtom(x):
+        return x.value == "+" or x.value == "-"
+    else: return False
+
+def TOP(x):
+    if isAtom(x):
+        return x.value == "*" or x.value == "/"
+    else: return False
+'''
+def Id(S1 Sn):
+    S1 = (x, Sn) True=isAtom(x) ??? ''' #não entendi esse código no Oz. true={IsIdent X}? Ele tá atribuindo o resultado de uma função a true?
+    #fiquei preso aqui - 2023-10-20 23:44:30
+
+def fact(S1, Sn):
+    
